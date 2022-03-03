@@ -1,7 +1,7 @@
 # POE-Robot-Code-2022
 Principles Of Engineering: Random Robot Project
 
-# 1. Description
+# 1. About this project
 
 > this robot code is for a Vex V5 robot, the goal of this robot was to pickup specific colored blocks.
 
