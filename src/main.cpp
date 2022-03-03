@@ -7,7 +7,8 @@
 // powerLED             led           A               
 // Vision               vision        19              
 // ClawMotor            motor         18              
-// RangeFinder          sonar         C, D            
+// rightRangeFinder     sonar         C, D            
+// leftRangeFinder      sonar         E, F            
 // ---- END VEXCODE CONFIGURED DEVICES ----
 #include "common.h"
 #include <iostream>
@@ -25,28 +26,84 @@ void PeriodicLED()  {
   }
 }
 
+void Autonomous() {                           // Yeah, im not annotating this.
+  
+      double rightDistance = rightRangeFinder.distance(inches);
+      double leftDistance  = leftRangeFinder.distance(inches);
+      if(leftDistance <= 10 && rightDistance <=10)  {
+          Drivetrain.stop();                  // Stop the Drivetrain and reverse
+          Drivetrain.driveFor(reverse, 15, inches);
+          Drivetrain.turnFor(right, 110, deg);
+          Drivetrain.stop(); 
+      } else if(leftDistance <= 10) {
+        Drivetrain.stop();
+        Drivetrain.turnFor(right, 45, deg);
+      } else if(leftDistance <= 10) {
+        Drivetrain.stop();
+        Drivetrain.turnFor(left, 45, deg);
+      }
+      Drivetrain.drive(forward);
+}
+
 int main() {
-  vex::thread(PeriodicLED).detach();
-  VisionSubsystem camera;
+  //Initialize whatever Vex V5 wants.
   vexcodeInit();
-  ClawSubsystem clawSubsystem{EClassState::open}; // Init our contructor for the claw subsystem
-  rearBumper.pressed(Callbacks::EmergencyStopCallback);
+
+  //note to self, maybe use Vex's event system instead of threads.
+  vex::thread(PeriodicLED).detach();
+  vex::thread(Callbacks::estopFunc).detach();
+  VisionSubsystem camera;
+  ClawSubsystem clawSubsystem{EClassState::closed};
 
   while(true) {
     
     camera.takeSnapshot(Vision__COLORRED);
-    if(camera.seesObjects()) {
-      auto object = camera.getNearestObject();
+    if(camera.seesObjects()) {                  // If the Camera's object count is more than 0
+      auto object = camera.getNearestObject();  // Filter for the closest object relative to the camera
         
-      if((object.centerY - (object.height / 2)) <= 2) {
-        clawSubsystem.SetPosition(EClassState::closed);
+      if((object.centerY - (object.height / 2)) <= 3) {
         Drivetrain.stop();
+        clawSubsystem.SetPosition(EClassState::closed);
+        break;
         }
       else
         clawSubsystem.SetPosition(EClassState::open);
 
-      if(clawSubsystem.isClawOpen())  {         // Search for mrs.Behrs marbles(she lost them)
+      if(clawSubsystem.isClawOpen())  {         // Begin the search for mrs.Behrs marbles(she lost them)
 
+      if(object.centerX < drivetrainTurnErrorBounds.first) {
+        Drivetrain.turn(right);
+      } else if(object.centerX > drivetrainTurnErrorBounds.second) {
+        Drivetrain.turn(left);
+      } else {
+        if(Drivetrain.isTurning())            // At this point the robot has locked onto the object
+          Drivetrain.stop();
+
+        Drivetrain.drive(forward);            // Go towards the colored cube(or marble)
+      }
+        
+      }
+    } 
+    else {
+      Autonomous();                           // If no objects were found by the camera
+    }
+  }
+
+  Brain.Screen.print("we have a block!");     // Or a marble ;)
+  Brain.Screen.newLine();
+  while(true) {                               // while(true) inside a while(true) ;)
+    camera.takeSnapshot(Vision__COLORGREEN);
+    if(!camera.seesObjects())
+      Autonomous();
+    else {
+      Brain.Screen.print("sees ORANGE_AND_BLUE");
+      Brain.Screen.newLine();
+      if(rightRangeFinder.distance(inches) <= 8 && leftRangeFinder.distance(inches) <= 8) {
+        Drivetrain.stop();
+        clawSubsystem.SetPosition(EClassState::open);
+        break;
+      }
+      auto object = camera.getNearestObject();        // We love 'auto'
       if(object.centerX < drivetrainTurnErrorBounds.first) {
         Drivetrain.turn(right);
       } else if(object.centerX > drivetrainTurnErrorBounds.second) {
@@ -55,22 +112,10 @@ int main() {
         if(Drivetrain.isTurning())
           Drivetrain.stop();
 
-        Drivetrain.drive(forward);            // Go towards the colored cube
+        Drivetrain.drive(forward);                  // Go towards the colored cube
       }
-        
-      }
-    } 
-    else {
-      Brain.Screen.print(RangeFinder.distance(inches));
-    if(RangeFinder.distance(inches) <= 10)  { // Check for 1meter distance
-        Drivetrain.stop();                          // Stop the Drivetrain and reverse
-        Drivetrain.driveFor(reverse, 15, inches);
-        Drivetrain.turnFor(right, 110, deg);
-        Drivetrain.stop(); 
-      }
-      Drivetrain.drive(forward);
-      
     }
   }
-  exit(-1);
+
+  return -1;                                        // Imagine
 }

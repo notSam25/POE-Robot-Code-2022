@@ -20,7 +20,8 @@ extern signature Vision__SIG_7;
 extern code Vision__CCNPIC;
 extern vision Vision;
 extern motor ClawMotor;
-extern sonar RangeFinder;
+extern sonar rightRangeFinder;
+extern sonar leftRangeFinder;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

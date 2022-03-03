@@ -24,7 +24,8 @@ code Vision__CCNPIC = code (Vision__COLORRED, Vision__COLORGREEN );
 vision Vision = vision (PORT19, 50, Vision__COLORRED, Vision__COLORYELLOW, Vision__COLORGREEN, Vision__SIG_4);
 /*vex-vision-config:end*/
 motor ClawMotor = motor(PORT18, ratio18_1, false);
-sonar RangeFinder = sonar(Brain.ThreeWirePort.C);
+sonar rightRangeFinder = sonar(Brain.ThreeWirePort.C);
+sonar leftRangeFinder = sonar(Brain.ThreeWirePort.E);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
