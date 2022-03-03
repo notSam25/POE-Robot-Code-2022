@@ -1,5 +1,5 @@
 # POE-Robot-Code-2022
-POE Project - Random Robot
+Principles Of Engineering: Random Robot Project
 
 # 1. Description
 
