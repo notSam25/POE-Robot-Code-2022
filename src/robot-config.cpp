@@ -11,17 +11,20 @@ brain  Brain;
 controller Controller1 = controller(primary);
 motor LeftDriveSmart = motor(PORT20, ratio18_1, false);
 motor RightDriveSmart = motor(PORT11, ratio18_1, true);
-inertial DrivetrainInertial = inertial(PORT9);
-smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainInertial, 398.98, 320, 40, mm, 1);
+inertial TurnGyroSmart = inertial(PORT9);
+smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, TurnGyroSmart, 398.98, 320, 40, mm, 1);
 bumper rearBumper = bumper(Brain.ThreeWirePort.B);
 led powerLED = led(Brain.ThreeWirePort.A);
 /*vex-vision-config:begin*/
-signature Vision__COLORRED = signature (1, 11171, 12499, 11835, -2101, -1347, -1724, 5.8, 1);
-signature Vision__COLORYELLOW = signature (2, 1171, 2469, 1820, -5591, -4951, -5271, 3, 0);
-signature Vision__COLORGREEN = signature (3, -6665, -5995, -6330, -4017, -3333, -3675, 6.1, 1);
-signature Vision__SIG_4 = signature (4, 0, 0, 0, 0, 0, 0, 3, 0);
+signature Vision__COLORRED = signature (1, 10239, 10969, 10604, -1349, -637, -993, 7.3, 1);
+signature Vision__COLORYELLOW = signature (2, 1719, 1985, 1852, -4537, -4165, -4351, 4.8, 0);
+signature Vision__COLORGREEN = signature (3, 0, 0, 0, 0, 0, 0, 3, 1);
+signature Vision__COLORORANGE = signature (4, 0, 0, 0, 0, 0, 0, 3, 1);
+signature Vision__COLORBLUE = signature (5, 0, 0, 0, 0, 0, 0, 3, 1);
+signature Vision__SIG_6 = signature (6, 0, 0, 0, 0, 0, 0, 3, 0);
 code Vision__CCNPIC = code (Vision__COLORRED, Vision__COLORGREEN );
-vision Vision = vision (PORT19, 50, Vision__COLORRED, Vision__COLORYELLOW, Vision__COLORGREEN, Vision__SIG_4);
+code Vision__ORANGE_AND_BLUE = code (Vision__COLORBLUE, Vision__COLORORANGE );
+vision Vision = vision (PORT19, 50, Vision__COLORRED, Vision__COLORYELLOW, Vision__COLORGREEN, Vision__COLORORANGE, Vision__COLORBLUE, Vision__SIG_6);
 /*vex-vision-config:end*/
 motor ClawMotor = motor(PORT18, ratio18_1, false);
 sonar rightRangeFinder = sonar(Brain.ThreeWirePort.C);
@@ -56,7 +59,7 @@ int rc_auto_loop_function_Controller1() {
           DrivetrainLNeedsToBeStopped_Controller1 = false;
         }
       } else {
-        // reset the toggle so that the deadband code knows to stop the left motor nexttime the input is in the deadband range
+        // reset the toggle so that the deadband code knows to stop the left motor next time the input is in the deadband range
         DrivetrainLNeedsToBeStopped_Controller1 = true;
       }
       // check if the value is inside of the deadband range
@@ -98,12 +101,12 @@ int rc_auto_loop_function_Controller1() {
 void vexcodeInit( void ) {
   Brain.Screen.print("Device initialization...");
   Brain.Screen.setCursor(2, 1);
-  // calibrate the drivetrain Inertial
+  // calibrate the drivetrain gyro
   wait(200, msec);
-  DrivetrainInertial.calibrate();
-  Brain.Screen.print("Calibrating Inertial for Drivetrain");
-  // wait for the Inertial calibration process to finish
-  while (DrivetrainInertial.isCalibrating()) {
+  TurnGyroSmart.calibrate();
+  Brain.Screen.print("Calibrating Gyro for Drivetrain");
+  // wait for the gyro calibration process to finish
+  while (TurnGyroSmart.isCalibrating()) {
     wait(25, msec);
   }
   // reset the screen now that the calibration is complete
