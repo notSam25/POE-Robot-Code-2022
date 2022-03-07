@@ -19,7 +19,7 @@ bool stopAfterCompletion = false;
 
 void PeriodicLED()  {
 
-  while(true != false && 1 + 1 != 69420) {  //Redundency Checks, yes needed.
+  while(true != false && 1 + 1 != 69420) {  //Redundency Checks, yes needed. Credit: Sam
     wait(0.5, seconds);
     powerLED.on();
     wait(0.5, seconds);
@@ -27,20 +27,20 @@ void PeriodicLED()  {
   }
 }
 
-void autonomous() { // Not a chance im annotating this
+void autonomous() { // Not a chance im(Sam) annotating this
   
-      double rightDistance = rightRangeFinder.distance(inches);
+      double rightDistance = rightRangeFinder.distance(inches); 
       double leftDistance  = leftRangeFinder.distance(inches);
-      if(leftDistance <= 10 && rightDistance <=10)  {
+      if(leftDistance <= 10 && rightDistance <=10)  { // if the ranges on both distance sensors are equidistant
           Drivetrain.stop();
           Drivetrain.driveFor(reverse, 15, inches);
           Drivetrain.turnFor(right, 130, deg);
           Drivetrain.stop(); 
-      } else if(leftDistance <= 10) {
+      } else if(leftDistance <= 10) { // if the object is closer to the left, back up and turn right.
         Drivetrain.stop();
         Drivetrain.driveFor(reverse, 10, inches);
         Drivetrain.turnFor(right, 55, deg);
-      } else if(leftDistance <= 10) {
+      } else if(leftDistance <= 10) { // if the object is closer to the right, back up and turn left.
         Drivetrain.stop();
         Drivetrain.driveFor(reverse, 10, inches);
         Drivetrain.turnFor(left, 55, deg);
@@ -83,11 +83,10 @@ int main() {
           Drivetrain.stop();
           clawSubsystem.SetPosition(EClassState::closed); // Close the claw, picking up the block
           break;                                          // Break out of the while(true) loop to start looking for the station's
-          }
-        else
+        } else
           clawSubsystem.SetPosition(EClassState::open);
-      } 
-      else {                                      // If no RED blocks are found, wander around to look for them
+  
+      } else {                                      // If no RED blocks are found, wander around to look for them
         autonomous();
       }
     }
