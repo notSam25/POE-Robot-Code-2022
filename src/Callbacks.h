@@ -3,7 +3,7 @@
 
 namespace Callbacks {
 
-  void estopFunc()  {
+  void estopFunc()  { // called when bumper pressed. Stops the robot.
     while(true){
       if(rearBumper.pressing()) {
         Brain.Screen.clearScreen();

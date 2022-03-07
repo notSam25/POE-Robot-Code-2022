@@ -7,20 +7,18 @@ enum EClassState {
 };
 
 class ClawSubsystem {
-  public:
+public:
   ClawSubsystem(EClassState state) { SetPosition(state); }  // Set the default state of the claw on robot startup
 
-  void SetPosition(EClassState state) {
-  ClawState = state;
-  if(state == EClassState::open)
-    ClawMotor.spinTo(195, degrees, true);
-  else
-    ClawMotor.spinTo(0.0, degrees, true);
+  void SetPosition(EClassState state) { //set position of claw
+    ClawState = state;
+    if(state == EClassState::open)
+      ClawMotor.spinTo(195, degrees, true);
+    else
+      ClawMotor.spinTo(0.0, degrees, true);
   }
 
-
-  bool isClawOpen() {
-    
+  bool isClawOpen() { // check claw state
       switch(ClawState) {
         case EClassState::none:
         return false;
@@ -33,6 +31,6 @@ class ClawSubsystem {
         break;
       }
   }
-  private:
+private:
   EClassState ClawState = EClassState::none;
 };
